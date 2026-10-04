@@ -1,0 +1,179 @@
+RISK ASSESSMENT WORKBENCH — SETUP GUIDE
+========================================
+How to get this project from git onto a new machine, install its
+dependencies, and run it locally. Follow the steps in order.
+
+Note: this working copy was not yet pushed to a git remote at the time
+this guide was written. If you're reading this from a teammate's clone,
+replace <REPO_URL> below with the actual git URL (ask whoever pushed it,
+or check `git remote -v` in their copy). If you ARE the person who needs
+to publish it first, see the "PUBLISHING THIS PROJECT TO GIT" section at
+the bottom before anyone else can clone it.
+
+
+0. PREREQUISITES
+-----------------
+- Python 3.10 or newer       -> check with: python3 --version
+- pip (comes with Python)    -> check with: pip3 --version
+- git                        -> check with: git --version
+- A terminal (macOS/Linux shown below; Windows notes included where it
+  differs)
+
+No Node.js, Docker, or database server is required. The vector database
+(Chroma) and the app database (SQLite) are both plain local files created
+automatically on first run.
+
+
+1. CLONE THE REPOSITORY
+------------------------
+    git clone <REPO_URL> DDA
+    cd DDA
+
+(If you already have a .zip/folder copy instead of a git remote, just
+`cd` into that folder and skip this step.)
+
+
+2. CREATE AND ACTIVATE A PYTHON VIRTUAL ENVIRONMENT
+-----------------------------------------------------
+Do this once per machine/checkout. Keeps this project's Python packages
+isolated from everything else on your system.
+
+  macOS / Linux:
+    python3 -m venv .venv
+    source .venv/bin/activate
+
+  Windows (PowerShell):
+    python -m venv .venv
+    .venv\Scripts\Activate.ps1
+
+  Windows (cmd.exe):
+    python -m venv .venv
+    .venv\Scripts\activate.bat
+
+You'll know it worked because your shell prompt gets a "(.venv)" prefix.
+You must re-run the "activate" command (not the "venv" creation command)
+every time you open a new terminal tab/window for this project.
+
+
+3. INSTALL PYTHON DEPENDENCIES
+--------------------------------
+With the virtual environment active (see step 2):
+
+    pip install -r requirements.txt
+
+This installs everything the backend needs: fastapi, uvicorn, pydantic,
+python-multipart, chromadb, httpx, python-dotenv, reportlab. First run can
+take a minute or two (chromadb pulls in a local embedding model runtime).
+
+
+4. CONFIGURE ENVIRONMENT VARIABLES (OPTIONAL BUT RECOMMENDED)
+-----------------------------------------------------------------
+    cp .env.example .env          (Windows: copy .env.example .env)
+
+Open .env in an editor and optionally fill in API keys:
+    GROQ_API_KEY_1, GROQ_API_KEY_2, GROQ_API_KEY_3   (groq.com keys)
+    GROK_API_KEY / OPENAI_API_KEY / ANTHROPIC_API_KEY (optional, unused
+                                                        by default)
+
+You do NOT need any keys to run the app. With .env missing or empty,
+every AI call automatically falls back to a deterministic mock model, and
+the full pipeline (RAG lookup -> 3 agents -> judge -> result) still runs
+end-to-end. Add Groq keys later any time to switch those calls to real
+LLM responses — no code changes needed.
+
+Never commit your filled-in .env file — it's already excluded via
+.gitignore.
+
+
+5. START THE BACKEND (TERMINAL 1)
+------------------------------------
+    source .venv/bin/activate     (skip if already active in this terminal)
+    uvicorn backend.main:app --reload --port 8000
+
+Leave this terminal running. On first startup it will also build the
+local knowledge-base vector index (backend/.chroma_store/) from the
+markdown files in knowledge/ — this only happens once and is cached for
+next time.
+
+Check it's up: open http://localhost:8000/api/health in a browser, or:
+    curl http://localhost:8000/api/health
+You should see: {"status":"ok"}
+
+
+6. START THE FRONTEND (TERMINAL 2 — separate tab/window)
+-------------------------------------------------------------
+Open a NEW terminal (keep the backend running in the first one):
+
+    cd DDA                        (same project folder)
+    source .venv/bin/activate     (same virtual environment)
+    python3 scripts/dev_server.py
+
+This serves the static frontend (index.html/app.js/styles.css) on
+http://localhost:4173 with caching disabled, so you always see your
+latest changes.
+
+
+7. OPEN THE APP
+------------------
+Visit:
+    http://localhost:4173
+
+Sign up with a username, email, and password, then log in. From there:
+  - "1. Intake" tab: submit a change request (title, type, description,
+    optional files).
+  - "2. Assessment Result" tab: watch the AI pipeline run, then see the
+    agent analysis and final risk assessment.
+  - "All Jobs": browse, reopen, or delete past submissions.
+
+
+8. RUNNING THE TEST / EVAL SCRIPTS (OPTIONAL)
+--------------------------------------------------
+With the virtual environment active and the backend running (for
+test_backend.py):
+
+    python3 -m scripts.test_providers_stub   # provider wire-format check, no real keys needed
+    python3 -m scripts.eval_retrieval        # retrieval quality check against the knowledge base
+    python3 -m scripts.test_backend          # full pipeline smoke test (needs the backend running)
+
+
+9. STOPPING / RESTARTING
+----------------------------
+- Stop either server with Ctrl+C in its terminal.
+- Submitted cases, users, and decisions persist in backend/workbench.db
+  (SQLite) across restarts — nothing is lost when you stop and restart
+  the backend.
+- To start completely fresh (wipe all data), stop the backend and delete:
+    backend/workbench.db
+    backend/.chroma_store/
+  then start the backend again — both will be rebuilt automatically.
+
+
+TROUBLESHOOTING
+------------------
+- "command not found: python3" on Windows -> use `python` instead of
+  `python3` throughout.
+- "Address already in use" on port 8000 or 4173 -> something else is
+  already running there; stop it, or add `--port <different-number>` to
+  the uvicorn command (and update API_BASE in app.js if you change the
+  backend's port).
+- Browser shows old UI after a change -> hard refresh (Cmd+Shift+R /
+  Ctrl+Shift+R); scripts/dev_server.py disables caching, but browser
+  bfcache can still show a stale page occasionally.
+- Pipeline results look identical/generic every time -> you're running
+  in mock mode (no provider keys configured) — this is expected and by
+  design; add Groq keys per step 4 to see live LLM output.
+
+
+PUBLISHING THIS PROJECT TO GIT (if it isn't on a remote yet)
+------------------------------------------------------------------
+From inside the project folder, one-time:
+
+    git init
+    git add .
+    git commit -m "Initial commit"
+    git remote add origin <REPO_URL>
+    git branch -M main
+    git push -u origin main
+
+Double-check `.env` is NOT staged (`git status` should not list it — it's
+covered by .gitignore) before pushing, since it can contain real API keys.

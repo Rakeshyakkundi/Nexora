@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Risk Assessment Workbench</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="styles.css?v=4" />
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+  <!-- ================= AUTH SCREEN ================= -->
+  <div id="authScreen" class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm">
+      <div class="flex items-center gap-3 justify-center mb-6">
+        <div class="h-10 w-10 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-white">RA</div>
+        <div>
+          <h1 class="text-lg font-semibold text-slate-900 leading-none">Risk Assessment Workbench</h1>
+          <p class="text-xs text-slate-500 leading-none mt-1">Financial Crimes Risk Management</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-6">
+        <!-- Login form -->
+        <form id="loginForm">
+          <h2 class="text-base font-semibold text-slate-900 mb-4">Log in</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="loginUsername">Username</label>
+              <input id="loginUsername" type="text" autocomplete="username" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="loginPassword">Password</label>
+              <input id="loginPassword" type="password" autocomplete="current-password" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+          </div>
+
+          <div id="loginError" class="hidden text-sm text-red-600 mt-3"></div>
+          <div id="loginSignupPrompt" class="hidden text-sm text-slate-600 mt-3">
+            No account found. <button type="button" id="goToSignupFromError" class="text-indigo-600 font-medium hover:underline">Sign up</button>
+          </div>
+
+          <button type="submit" class="w-full mt-4 rounded-lg bg-indigo-600 text-white text-sm font-medium px-4 py-2.5 hover:bg-indigo-700 transition">Log in</button>
+
+          <div class="flex items-center justify-between mt-4 text-xs">
+            <button type="button" id="goToSignup" class="text-indigo-600 font-medium hover:underline">Create an account</button>
+            <button type="button" id="goToReset" class="text-slate-500 hover:underline">Forgot password?</button>
+          </div>
+        </form>
+
+        <!-- Signup form -->
+        <form id="signupForm" class="hidden">
+          <h2 class="text-base font-semibold text-slate-900 mb-4">Sign up</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="signupUsername">Username</label>
+              <input id="signupUsername" type="text" autocomplete="username" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="signupEmail">Email</label>
+              <input id="signupEmail" type="email" autocomplete="email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="signupPassword">Password</label>
+              <input id="signupPassword" type="password" autocomplete="new-password" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+          </div>
+
+          <div id="signupError" class="hidden text-sm text-red-600 mt-3"></div>
+
+          <button type="submit" class="w-full mt-4 rounded-lg bg-indigo-600 text-white text-sm font-medium px-4 py-2.5 hover:bg-indigo-700 transition">Sign up</button>
+
+          <div class="mt-4 text-xs text-center">
+            <button type="button" id="goToLoginFromSignup" class="text-indigo-600 font-medium hover:underline">Already have an account? Log in</button>
+          </div>
+        </form>
+
+        <!-- Reset password form -->
+        <form id="resetForm" class="hidden">
+          <h2 class="text-base font-semibold text-slate-900 mb-1">Reset password</h2>
+          <p class="text-xs text-slate-500 mb-4">Enter your email and a new password. No verification required for this demo.</p>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="resetEmail">Email</label>
+              <input id="resetEmail" type="email" autocomplete="email" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1" for="resetNewPassword">New password</label>
+              <input id="resetNewPassword" type="password" autocomplete="new-password" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            </div>
+          </div>
+
+          <div id="resetError" class="hidden text-sm text-red-600 mt-3"></div>
+          <div id="resetSuccess" class="hidden text-sm text-emerald-600 mt-3"></div>
+
+          <button type="submit" class="w-full mt-4 rounded-lg bg-indigo-600 text-white text-sm font-medium px-4 py-2.5 hover:bg-indigo-700 transition">Reset password</button>
+
+          <div class="mt-4 text-xs text-center">
+            <button type="button" id="goToLoginFromReset" class="text-indigo-600 font-medium hover:underline">Back to log in</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= APP SHELL (auth-gated) ================= -->
+  <div id="appShell" class="hidden">
+
+  <!-- AI processing overlay: shown while the agent ensemble runs -->
+  <div id="aiProcessingOverlay" class="ai-processing hidden">
+    <div class="core-stage">
+      <div class="core-ring core-ring-1"></div>
+      <div class="core-ring core-ring-2"></div>
+      <div class="core-ring core-ring-3"></div>
+      <div class="core-orb"></div>
+      <div class="core-scan"></div>
+    </div>
+    <p class="ai-processing-label">
+      ANALYZING RISK SIGNALS<span class="ai-processing-dots"><span>.</span><span>.</span><span>.</span></span>
+    </p>
+    <p class="ai-processing-sub">Running RAG lookup against the FCRM knowledge base · Dispatching specialist agent ensemble · Awaiting judge verdict</p>
+  </div>
+
+  <!-- Header -->
+  <header class="bg-slate-900 text-white">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-lg bg-indigo-500 flex items-center justify-center font-bold">RA</div>
+        <div>
+          <h1 class="text-lg font-semibold leading-none">Risk Assessment Workbench</h1>
+          <p class="text-xs text-slate-400 leading-none mt-1">Financial Crimes Risk Management</p>
+        </div>
+      </div>
+      <div class="text-sm text-slate-300 flex items-center gap-3">
+        <span id="currentUsernameLabel"></span>
+        <button id="logoutBtn" class="text-xs px-2 py-1 rounded border border-slate-600 hover:bg-slate-800 transition">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="bg-white border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+      <div class="flex gap-6" role="tablist">
+        <button data-tab="upload" class="tab-btn py-4 text-sm font-medium border-b-2 border-indigo-600 text-indigo-600" role="tab" aria-selected="true">
+          Intake
+        </button>
+        <button data-tab="result" class="tab-btn py-4 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700" role="tab" aria-selected="false">
+          Assessment Result
+        </button>
+      </div>
+      <div class="flex items-center gap-3">
+        <button data-tab="jobs" class="tab-btn py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700" role="tab" aria-selected="false">
+          ◀ All Jobs
+        </button>
+        <button id="newRequestBtn" class="rounded-lg bg-indigo-600 text-white text-xs font-medium px-3 py-1.5 hover:bg-indigo-700 transition">
+          ＋ New Request
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- ================= UPLOAD TAB ================= -->
+    <section id="panel-upload" class="tab-panel">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold text-slate-900">New Change Request</h2>
+        <p class="text-sm text-slate-500 mt-1">Describe the change and attach any supporting documents for financial crime risk assessment.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Form -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6 space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="changeTitle">Change title</label>
+            <input id="changeTitle" type="text" placeholder="e.g. Launch instant cross-border transfer feature"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="changeType">Change type</label>
+            <select id="changeType"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+              <option value="">Select a change type…</option>
+              <option>New Product</option>
+              <option>Feature Change</option>
+              <option>Vendor Onboarding</option>
+              <option>New Geography</option>
+              <option>New Customer Segment</option>
+              <option>Process Change</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="changeDesc">Description</label>
+            <textarea id="changeDesc" rows="4" placeholder="Briefly describe the change and its intended impact…"
+              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Supporting documents</label>
+
+            <div id="dropZone" class="drop-zone rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-10 text-center cursor-pointer transition">
+              <input id="fileInput" type="file" multiple class="hidden" />
+              <svg class="mx-auto h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 8.25L12 3.75 7.5 8.25M12 3.75v13.5" />
+              </svg>
+              <p class="mt-3 text-sm text-slate-600">
+                <span class="font-medium text-indigo-600">Click to browse</span> or drag and drop files here
+              </p>
+              <p class="text-xs text-slate-400 mt-1">PDF, DOCX, XLSX up to 20MB each</p>
+            </div>
+
+            <ul id="fileList" class="mt-4 space-y-2"></ul>
+          </div>
+
+          <div id="submitError" class="hidden text-sm text-red-600"></div>
+
+          <div class="flex justify-end pt-2">
+            <button id="submitBtn" disabled
+              class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 text-white text-sm font-medium px-5 py-2.5 disabled:bg-slate-300 disabled:cursor-not-allowed hover:bg-indigo-700 transition">
+              Submit for Assessment
+            </button>
+          </div>
+        </div>
+
+        <!-- Side info -->
+        <div class="space-y-4">
+          <div class="bg-white rounded-xl border border-slate-200 p-5">
+            <h3 class="text-sm font-semibold text-slate-900 mb-2">How it works</h3>
+            <ol class="text-sm text-slate-600 space-y-2 list-decimal list-inside">
+              <li>Upload your change request and documents.</li>
+              <li>Our AI pipeline drafts a risk assessment against existing &amp; public policy.</li>
+              <li>An FCRM analyst reviews and the committee decides.</li>
+            </ol>
+          </div>
+          <div class="bg-indigo-50 rounded-xl border border-indigo-100 p-5">
+            <h3 class="text-sm font-semibold text-indigo-900 mb-1">Typical turnaround</h3>
+            <p class="text-sm text-indigo-700">Assessment drafting typically completes within minutes; analyst &amp; committee review follows separately.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= RESULT TAB (Agent Analysis -> Final Result, stacked) ================= -->
+    <section id="panel-result" class="tab-panel tab-panel-hidden">
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold text-slate-900">Agent Analysis</h2>
+        <p class="text-sm text-slate-500 mt-1">Your submission is being analyzed by the risk assessment pipeline.</p>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-6 mb-8">
+        <div class="flex flex-col items-center mb-8">
+          <div class="rounded-full bg-slate-900 text-white text-sm font-medium px-4 py-2">STARK</div>
+          <div class="flex items-center gap-2 mt-2">
+            <span id="master-agent-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+            <span id="master-agent-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+            <span id="master-agent-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono"></span>
+          </div>
+          <div class="h-8 w-px bg-slate-300 mt-2"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="agent-card rounded-lg border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+              <span class="text-sm font-medium text-slate-800">Jarvis</span>
+              <div class="flex items-center gap-1">
+                <span id="agent1-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+                <span id="agent1-rating" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-medium"></span>
+                <span id="agent1-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+              </div>
+            </div>
+            <p id="agent1-role" class="text-xs text-slate-500 mb-2">Sanctions &amp; AML Typology Specialist</p>
+            <span id="agent1-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono mt-1 inline-block"></span>
+            <div id="agent1-confidence-block" class="hidden mb-2">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[10px] text-slate-400">Confidence</span>
+                <span id="agent1-confidence-label" class="text-[10px] text-slate-500">—</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div id="agent1-confidence-bar" class="h-full rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <p id="agent1-output" class="text-xs text-slate-600 mt-2 whitespace-pre-line"></p>
+          </div>
+          <div class="agent-card rounded-lg border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+              <span class="text-sm font-medium text-slate-800">Edith</span>
+              <div class="flex items-center gap-1">
+                <span id="agent2-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+                <span id="agent2-rating" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-medium"></span>
+                <span id="agent2-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+              </div>
+            </div>
+            <p id="agent2-role" class="text-xs text-slate-500 mb-2">Regulatory &amp; CDD Specialist</p>
+            <span id="agent2-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono mt-1 inline-block"></span>
+            <div id="agent2-confidence-block" class="hidden mb-2">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[10px] text-slate-400">Confidence</span>
+                <span id="agent2-confidence-label" class="text-[10px] text-slate-500">—</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div id="agent2-confidence-bar" class="h-full rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <p id="agent2-output" class="text-xs text-slate-600 mt-2 whitespace-pre-line"></p>
+          </div>
+          <div class="agent-card rounded-lg border border-slate-200 p-4">
+            <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+              <span class="text-sm font-medium text-slate-800">Friday</span>
+              <div class="flex items-center gap-1">
+                <span id="agent3-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+                <span id="agent3-rating" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-medium"></span>
+                <span id="agent3-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+              </div>
+            </div>
+            <p id="agent3-role" class="text-xs text-slate-500 mb-2">Third-Party &amp; Geographic Risk Specialist</p>
+            <span id="agent3-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono mt-1 inline-block"></span>
+            <div id="agent3-confidence-block" class="hidden mb-2">
+              <div class="flex items-center justify-between mb-0.5">
+                <span class="text-[10px] text-slate-400">Confidence</span>
+                <span id="agent3-confidence-label" class="text-[10px] text-slate-500">—</span>
+              </div>
+              <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div id="agent3-confidence-bar" class="h-full rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+            <p id="agent3-output" class="text-xs text-slate-600 mt-2 whitespace-pre-line"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <h2 class="text-xl font-semibold text-slate-900">Final Result</h2>
+        <p class="text-sm text-slate-500 mt-1">AI-drafted outcome, pending analyst review.</p>
+      </div>
+
+      <div class="bg-white rounded-xl border border-slate-200 p-6 max-w-3xl">
+        <div class="flex items-center justify-between mb-4">
+          <h3 id="resultTitle" class="text-base font-semibold text-slate-900">Awaiting assessment…</h3>
+          <span id="resultBadge" class="text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500">—</span>
+        </div>
+        <p id="resultSummary" class="text-sm text-slate-600 leading-relaxed">
+          Submit a change request from the Intake tab to generate an assessment.
+        </p>
+
+        <ul id="resultConditions" class="hidden text-sm text-slate-600 list-disc list-inside mt-3 space-y-1"></ul>
+
+        <div id="resultConfidenceBlock" class="hidden mt-4">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-medium text-slate-600">Agent Consensus</span>
+            <span id="resultConfidenceLabel" class="text-xs font-medium text-slate-700">—</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+            <div id="resultConfidenceBar" class="h-full rounded-full transition-all" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div id="resultVotes" class="hidden text-xs text-slate-500 mt-3"></div>
+        <p id="resultJudgeNote" class="hidden text-xs text-slate-500 mt-2 italic"></p>
+
+        <div id="resultDecisionRow" class="flex gap-3 mt-6">
+          <button id="acceptBtn" class="rounded-lg bg-emerald-600 text-white text-sm font-medium px-4 py-2 hover:bg-emerald-700 transition disabled:bg-slate-300 disabled:cursor-not-allowed" disabled>Accept</button>
+          <button id="rejectBtn" class="rounded-lg bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>Reject</button>
+        </div>
+        <p id="resultDecisionNote" class="hidden text-sm font-medium text-slate-700 mt-4"></p>
+      </div>
+    </section>
+
+    <!-- ================= JOBS TAB ================= -->
+    <section id="panel-jobs" class="tab-panel tab-panel-hidden">
+      <div class="mb-6 flex items-end justify-between">
+        <div>
+          <h2 class="text-xl font-semibold text-slate-900">Previous Jobs</h2>
+          <p class="text-sm text-slate-500 mt-1">All assessment runs, newest first.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="jobsDeleteAllBtn" class="rounded-lg border border-red-300 bg-white text-sm text-red-600 px-3 py-1.5 hover:bg-red-50 transition">Delete All</button>
+          <button id="jobsRefreshBtn" class="rounded-lg border border-slate-300 bg-white text-sm px-3 py-1.5 hover:bg-slate-50 transition">Refresh</button>
+        </div>
+      </div>
+
+      <div id="jobsLoading" class="hidden text-sm text-slate-500">Loading jobs…</div>
+      <div id="jobsError" class="hidden text-sm text-red-600 mb-3"></div>
+      <div id="jobsEmpty" class="hidden rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+        No jobs yet. Submit a change request to get started.
+      </div>
+      <ul id="jobsList" class="rounded-xl border border-slate-200 bg-white divide-y divide-slate-200 overflow-hidden"></ul>
+    </section>
+
+    <!-- ================= JOB DETAIL (opened from All Jobs) ================= -->
+    <section id="panel-job-detail" class="tab-panel tab-panel-hidden">
+      <div class="mb-6 flex items-center justify-between">
+        <button id="jobDetailBackBtn" class="text-sm text-indigo-600 font-medium hover:underline">◀ Back to All Jobs</button>
+      </div>
+
+      <!-- Request -->
+      <div class="bg-white rounded-xl border border-slate-200 p-6 mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h2 id="detail-req-title" class="text-lg font-semibold text-slate-900">—</h2>
+          <span id="detail-req-status" class="text-xs font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-500"></span>
+        </div>
+        <dl class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-slate-500 mb-3">
+          <div>
+            <dt class="uppercase tracking-wide">Change type</dt>
+            <dd id="detail-req-type" class="text-slate-800 font-medium mt-0.5">—</dd>
+          </div>
+          <div>
+            <dt class="uppercase tracking-wide">Submitted by</dt>
+            <dd id="detail-req-submitted-by" class="text-slate-800 font-medium mt-0.5">—</dd>
+          </div>
+          <div>
+            <dt class="uppercase tracking-wide">Submitted on</dt>
+            <dd id="detail-req-created-at" class="text-slate-800 font-medium mt-0.5">—</dd>
+          </div>
+          <div>
+            <dt class="uppercase tracking-wide">Files</dt>
+            <dd id="detail-req-files" class="text-slate-800 font-medium mt-0.5">—</dd>
+          </div>
+        </dl>
+        <p id="detail-req-desc" class="text-sm text-slate-600 leading-relaxed"></p>
+      </div>
+
+      <!-- Agent Processing -->
+      <div class="mb-6">
+        <h3 class="text-sm font-semibold text-slate-900 mb-3">Agent Processing</h3>
+        <div class="bg-white rounded-xl border border-slate-200 p-6">
+          <div class="flex flex-col items-center mb-8">
+            <div class="rounded-full bg-slate-900 text-white text-sm font-medium px-4 py-2">STARK</div>
+            <div class="flex items-center gap-2 mt-2">
+              <span id="detail-master-agent-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+              <span id="detail-master-agent-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+              <span id="detail-master-agent-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono"></span>
+            </div>
+            <div class="h-8 w-px bg-slate-300 mt-2"></div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="agent-card rounded-lg border border-slate-200 p-4">
+              <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+                <span class="text-sm font-medium text-slate-800">Jarvis</span>
+                <div class="flex items-center gap-1">
+                  <span id="detail-agent1-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+                  <span id="detail-agent1-rating" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-medium"></span>
+                  <span id="detail-agent1-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+                </div>
+              </div>
+              <p id="detail-agent1-role" class="text-xs text-slate-500 mb-2">Sanctions &amp; AML Typology Specialist</p>
+              <span id="detail-agent1-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono mt-1 inline-block"></span>
+              <div id="detail-agent1-confidence-block" class="hidden mb-2">
+                <div class="flex items-center justify-between mb-0.5">
+                  <span class="text-[10px] text-slate-400">Confidence</span>
+                  <span id="detail-agent1-confidence-label" class="text-[10px] text-slate-500">—</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="detail-agent1-confidence-bar" class="h-full rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <p id="detail-agent1-output" class="text-xs text-slate-600 mt-2 whitespace-pre-line"></p>
+            </div>
+            <div class="agent-card rounded-lg border border-slate-200 p-4">
+              <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+                <span class="text-sm font-medium text-slate-800">Edith</span>
+                <div class="flex items-center gap-1">
+                  <span id="detail-agent2-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+                  <span id="detail-agent2-rating" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-medium"></span>
+                  <span id="detail-agent2-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+                </div>
+              </div>
+              <p id="detail-agent2-role" class="text-xs text-slate-500 mb-2">Regulatory &amp; CDD Specialist</p>
+              <span id="detail-agent2-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono mt-1 inline-block"></span>
+              <div id="detail-agent2-confidence-block" class="hidden mb-2">
+                <div class="flex items-center justify-between mb-0.5">
+                  <span class="text-[10px] text-slate-400">Confidence</span>
+                  <span id="detail-agent2-confidence-label" class="text-[10px] text-slate-500">—</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="detail-agent2-confidence-bar" class="h-full rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <p id="detail-agent2-output" class="text-xs text-slate-600 mt-2 whitespace-pre-line"></p>
+            </div>
+            <div class="agent-card rounded-lg border border-slate-200 p-4">
+              <div class="flex items-center justify-between mb-1 flex-wrap gap-1">
+                <span class="text-sm font-medium text-slate-800">Friday</span>
+                <div class="flex items-center gap-1">
+                  <span id="detail-agent3-duration" class="hidden text-[10px] text-slate-400 font-mono"></span>
+                  <span id="detail-agent3-rating" class="hidden text-[10px] px-1.5 py-0.5 rounded-full font-medium"></span>
+                  <span id="detail-agent3-status" class="status-pill text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">Queued</span>
+                </div>
+              </div>
+              <p id="detail-agent3-role" class="text-xs text-slate-500 mb-2">Third-Party &amp; Geographic Risk Specialist</p>
+              <span id="detail-agent3-provider" class="hidden text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono mt-1 inline-block"></span>
+              <div id="detail-agent3-confidence-block" class="hidden mb-2">
+                <div class="flex items-center justify-between mb-0.5">
+                  <span class="text-[10px] text-slate-400">Confidence</span>
+                  <span id="detail-agent3-confidence-label" class="text-[10px] text-slate-500">—</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                  <div id="detail-agent3-confidence-bar" class="h-full rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <p id="detail-agent3-output" class="text-xs text-slate-600 mt-2 whitespace-pre-line"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-900 mb-3">Result</h3>
+        <div class="bg-white rounded-xl border border-slate-200 p-6 max-w-3xl">
+          <div class="flex items-center justify-between mb-4">
+            <h3 id="detail-resultTitle" class="text-base font-semibold text-slate-900">Awaiting assessment…</h3>
+            <span id="detail-resultBadge" class="text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-500">—</span>
+          </div>
+          <p id="detail-resultSummary" class="text-sm text-slate-600 leading-relaxed"></p>
+
+          <ul id="detail-resultConditions" class="hidden text-sm text-slate-600 list-disc list-inside mt-3 space-y-1"></ul>
+
+          <div id="detail-resultConfidenceBlock" class="hidden mt-4">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-medium text-slate-600">Agent Consensus</span>
+              <span id="detail-resultConfidenceLabel" class="text-xs font-medium text-slate-700">—</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+              <div id="detail-resultConfidenceBar" class="h-full rounded-full transition-all" style="width: 0%"></div>
+            </div>
+          </div>
+
+          <div id="detail-resultVotes" class="hidden text-xs text-slate-500 mt-3"></div>
+          <p id="detail-resultJudgeNote" class="hidden text-xs text-slate-500 mt-2 italic"></p>
+
+          <div id="detail-resultDecisionRow" class="flex gap-3 mt-6">
+            <button id="detail-acceptBtn" class="rounded-lg bg-emerald-600 text-white text-sm font-medium px-4 py-2 hover:bg-emerald-700 transition disabled:bg-slate-300 disabled:cursor-not-allowed" disabled>Accept</button>
+            <button id="detail-rejectBtn" class="rounded-lg bg-white border border-slate-300 text-slate-700 text-sm font-medium px-4 py-2 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>Reject</button>
+          </div>
+          <p id="detail-resultDecisionNote" class="hidden text-sm font-medium text-slate-700 mt-4"></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  </div>
+
+  <script src="app.js?v=5"></script>
+</body>
+</html>

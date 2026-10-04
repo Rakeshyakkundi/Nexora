@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["scripts/dev_server.py", "4173"],
+      "port": 4173
+    },
+    {
+      "name": "api-server",
+      "runtimeExecutable": "uvicorn",
+      "runtimeArgs": ["backend.main:app", "--reload", "--port", "8000"],
+      "port": 8000
+    }
+  ]
+}

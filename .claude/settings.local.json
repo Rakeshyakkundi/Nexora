@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pkill -f \"uvicorn backend.main:app\")",
+      "Bash(pkill -f \"http.server 4173\")",
+      "Bash(lsof -nP -iTCP:8000 -iTCP:4173 -sTCP:LISTEN)"
+    ]
+  }
+}
